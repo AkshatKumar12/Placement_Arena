@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebRTC Classroom</title>
+</head>
+<body>
+  <h2>Teacher</h2>
+  <video id="teacherVideo" autoplay muted playsinline></video>
+  <button onclick="startTeacher()">Start Teacher</button>
+
+  <hr />
+
+  <h2>Student</h2>
+  <video id="studentVideo" autoplay playsinline></video>
+  <button onclick="startStudent()">Join as Student</button>
+
+  <script type="module" src="../src/teacher.js"></script>
+  <script type="module" src="../src/student.js"></script>
+</body>
+</html>
