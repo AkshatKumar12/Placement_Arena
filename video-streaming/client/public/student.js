@@ -1,5 +1,6 @@
 import { socket } from "./socket.js";
 
+
 let pc;
 
 const iceConfig = {
@@ -7,13 +8,19 @@ const iceConfig = {
 };
 
 window.startStudent = () => {
+  console.log("🎒 Student joined");
   socket.emit("join-as-student");
 
   pc = new RTCPeerConnection(iceConfig);
 
-  pc.ontrack = (event) => {
-    document.getElementById("studentVideo").srcObject = event.streams[0];
-  };
+pc.ontrack = (event) => {
+  const video = document.getElementById("studentVideo");
+  video.srcObject = event.streams[0];
+  video.play().catch(err => {
+    console.log("Autoplay blocked:", err);
+  });
+};
+
 
   pc.onicecandidate = (event) => {
     if (event.candidate) {

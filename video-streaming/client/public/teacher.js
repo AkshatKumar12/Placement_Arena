@@ -1,5 +1,6 @@
 import { socket } from "./socket.js";
 
+
 let localStream;
 const peerConnections = {};
 
@@ -8,6 +9,7 @@ const iceConfig = {
 };
 
 window.startTeacher = async () => {
+  console.log("🎓 Teacher started");
   socket.emit("join-as-teacher");
 
   localStream = await navigator.mediaDevices.getUserMedia({
@@ -48,6 +50,10 @@ socket.on("answer", async ({ answer, studentId }) => {
   }
 });
 
-socket.on("ice-candidate", async ({ candidate }) => {
-  // Teacher normally won't receive ICE from students in one-way setup
+socket.on("ice-candidate", async ({ candidate, from }) => {
+  const pc = peerConnections[from];
+  if (pc && candidate) {
+    await pc.addIceCandidate(candidate);
+  }
 });
+

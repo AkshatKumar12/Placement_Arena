@@ -1,6 +1,7 @@
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
+console.log("Starting signaling server...");
 
 const app = express();
 const httpServer = createServer(app);
@@ -41,7 +42,13 @@ io.on("connection", (socket) => {
   });
 
   socket.on("ice-candidate", ({ candidate, target }) => {
-    io.to(target).emit("ice-candidate", { candidate });
+    const resolvedTarget = target ?? teacherSocketId;
+    if (resolvedTarget) {
+      io.to(resolvedTarget).emit("ice-candidate", {
+        candidate,
+        from: socket.id
+      });
+    }
   });
 
   socket.on("disconnect", () => {
@@ -55,3 +62,4 @@ io.on("connection", (socket) => {
 httpServer.listen(5000, () => {
   console.log("Signaling server running on http://localhost:5000");
 });
+

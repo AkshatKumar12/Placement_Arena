@@ -1,20 +1,23 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <title>WebRTC Classroom</title>
-</head>
-<body>
-  <h2>Teacher</h2>
-  <video id="teacherVideo" autoplay muted playsinline></video>
-  <button onclick="startTeacher()">Start Teacher</button>
+  <head>
+    <title>WebRTC Classroom</title>
+  </head>
+  <body>
+    <h2>WebRTC Classroom</h2>
+    <p>Open both roles:</p>
+    <button id="openBoth">Open Teacher + Student</button>
+    <p>
+      Or open individually:
+      <a href="./teacher.html">Teacher</a> |
+      <a href="./student.html">Student</a>
+    </p>
 
-  <hr />
-
-  <h2>Student</h2>
-  <video id="studentVideo" autoplay playsinline></video>
-  <button onclick="startStudent()">Join as Student</button>
-
-  <script type="module" src="../src/teacher.js"></script>
-  <script type="module" src="../src/student.js"></script>
-</body>
+    <script>
+      document.getElementById("openBoth").addEventListener("click", () => {
+        window.open("./teacher.html", "_blank", "noopener,noreferrer");
+        window.open("./student.html", "_blank", "noopener,noreferrer");
+      });
+    </script>
+  </body>
 </html>
