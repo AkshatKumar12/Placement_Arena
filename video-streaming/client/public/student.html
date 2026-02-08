@@ -45,33 +45,19 @@
             </div>
           </section>
 
-          <section class="code-panel">
-            <div class="whiteboard-header">
-              <div class="whiteboard-title">Student Code</div>
-              <span class="tag">Submit</span>
-            </div>
-            <textarea
-              id="studentCode"
-              class="code-area"
-              placeholder="Write your code here..."
-            ></textarea>
-            <div class="code-toolbar">
-              <button class="btn primary" id="submitCode">
-                Submit code
-              </button>
-              <span class="code-meta" id="codeStatus">
-                Not submitted yet.
-              </span>
-            </div>
-          </section>
         </div>
 
         <aside class="control-panel">
           <h1>Join the class</h1>
           <p>Press join and wait for the teacher to start.</p>
-          <button class="btn primary" onclick="startStudent()">
-            Join as student
-          </button>
+          <div class="code-toolbar">
+            <button class="btn primary" id="startStudentBtn" onclick="startStudent()">
+              Join as student
+            </button>
+            <button class="btn" id="leaveStudentBtn" onclick="leaveStudent()" hidden>
+              Leave
+            </button>
+          </div>
           <div class="status-list">
             <div class="status-item">
               <span class="status-dot"></span>

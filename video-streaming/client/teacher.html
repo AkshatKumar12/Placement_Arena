@@ -65,30 +65,20 @@
             </div>
           </section>
 
-          <section class="code-panel">
-            <div class="whiteboard-header">
-              <div class="whiteboard-title">Student Code</div>
-              <span class="tag">Live submissions</span>
-            </div>
-            <textarea
-              id="teacherCode"
-              class="code-area"
-              readonly
-            ></textarea>
-            <div class="code-toolbar">
-              <span class="code-meta" id="teacherCodeMeta">
-                Waiting for student submission...
-              </span>
-            </div>
-          </section>
         </div>
 
         <aside class="control-panel">
           <h1>Run the session</h1>
           <p>Start broadcasting and wait for students to join.</p>
-          <button class="btn primary" onclick="startTeacher()">
-            Start teacher
-          </button>
+          <div class="code-toolbar">
+            <button class="btn primary" id="startTeacherBtn" onclick="startTeacher()">
+              Start teacher
+            </button>
+            <button class="btn" id="leaveTeacherBtn" onclick="leaveTeacher()" hidden>
+              Leave
+            </button>
+          </div>
+          <div class="code-meta" id="teacherNotice">Waiting for students...</div>
           <div class="status-list">
             <div class="status-item">
               <span class="status-dot"></span>
