@@ -1,18 +1,94 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
     <title>WebRTC Classroom - Student</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    />
+    <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <h2>Student</h2>
-    <video
-      id="studentVideo"
-      autoplay
-      playsinline
-      width="400"
-      height="300"
-    ></video>
-    <button onclick="startStudent()">Join as Student</button>
+    <div class="page">
+      <header class="top">
+        <a class="back-link" href="./index.html">Back to home</a>
+        <span class="role-pill">Student</span>
+      </header>
+
+      <main class="role-main">
+        <div class="stack">
+          <section class="video-panel">
+            <div class="video-frame">
+              <video id="studentVideo" autoplay playsinline></video>
+            </div>
+            <div class="video-note">
+              The live teacher stream will appear here.
+            </div>
+          </section>
+
+          <section class="whiteboard-panel">
+            <div class="whiteboard-header">
+              <div class="whiteboard-title">Whiteboard</div>
+              <span class="tag">Live view</span>
+            </div>
+            <canvas
+              id="studentBoard"
+              class="whiteboard-canvas"
+            ></canvas>
+            <div class="whiteboard-hint">
+              Notes from the teacher will appear here.
+            </div>
+          </section>
+
+          <section class="code-panel">
+            <div class="whiteboard-header">
+              <div class="whiteboard-title">Student Code</div>
+              <span class="tag">Submit</span>
+            </div>
+            <textarea
+              id="studentCode"
+              class="code-area"
+              placeholder="Write your code here..."
+            ></textarea>
+            <div class="code-toolbar">
+              <button class="btn primary" id="submitCode">
+                Submit code
+              </button>
+              <span class="code-meta" id="codeStatus">
+                Not submitted yet.
+              </span>
+            </div>
+          </section>
+        </div>
+
+        <aside class="control-panel">
+          <h1>Join the class</h1>
+          <p>Press join and wait for the teacher to start.</p>
+          <button class="btn primary" onclick="startStudent()">
+            Join as student
+          </button>
+          <div class="status-list">
+            <div class="status-item">
+              <span class="status-dot"></span>
+              Keep audio on for the best experience
+            </div>
+            <div class="status-item">
+              <span class="status-dot"></span>
+              Stay on this tab while viewing
+            </div>
+            <div class="status-item">
+              <span class="status-dot"></span>
+              Ask for the teacher link if the video is blank
+            </div>
+          </div>
+        </aside>
+      </main>
+    </div>
 
     <script type="module" src="./student.js"></script>
   </body>

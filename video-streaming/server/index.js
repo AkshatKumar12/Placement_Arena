@@ -13,6 +13,7 @@ const io = new Server(httpServer, {
 });
 
 let teacherSocketId = null;
+const studentSocketIds = new Set();
 
 io.on("connection", (socket) => {
   console.log("Connected:", socket.id);
@@ -23,6 +24,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("join-as-student", () => {
+    studentSocketIds.add(socket.id);
     if (teacherSocketId) {
       io.to(teacherSocketId).emit("student-joined", {
         studentId: socket.id
@@ -51,11 +53,41 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("whiteboard-draw", (payload) => {
+    if (socket.id !== teacherSocketId) {
+      return;
+    }
+    studentSocketIds.forEach((studentId) => {
+      io.to(studentId).emit("whiteboard-draw", payload);
+    });
+  });
+
+  socket.on("whiteboard-clear", () => {
+    if (socket.id !== teacherSocketId) {
+      return;
+    }
+    studentSocketIds.forEach((studentId) => {
+      io.to(studentId).emit("whiteboard-clear");
+    });
+  });
+
+  socket.on("student-code", ({ code }) => {
+    if (!teacherSocketId) {
+      return;
+    }
+    io.to(teacherSocketId).emit("student-code", {
+      code,
+      studentId: socket.id,
+      submittedAt: Date.now()
+    });
+  });
+
   socket.on("disconnect", () => {
     console.log("Disconnected:", socket.id);
     if (socket.id === teacherSocketId) {
       teacherSocketId = null;
     }
+    studentSocketIds.delete(socket.id);
   });
 });
 

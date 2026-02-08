@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>WebRTC Classroom - Teacher</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="top">
+        <a class="back-link" href="./index.html">Back to home</a>
+        <span class="role-pill">Teacher</span>
+      </header>
+
+      <main class="role-main">
+        <div class="stack">
+          <section class="video-panel">
+            <div class="video-frame">
+              <video
+                id="teacherVideo"
+                autoplay
+                muted
+                playsinline
+              ></video>
+            </div>
+            <div class="video-note">
+              Your live camera feed will appear here after starting.
+            </div>
+          </section>
+
+          <section class="whiteboard-panel">
+            <div class="whiteboard-header">
+              <div class="whiteboard-title">Whiteboard</div>
+              <div class="whiteboard-tools">
+                <label>
+                  Pen size
+                  <input
+                    type="range"
+                    id="teacherPenSize"
+                    min="2"
+                    max="8"
+                    step="1"
+                    value="3"
+                  />
+                </label>
+                <button class="btn" id="teacherClearBoard">
+                  Clear
+                </button>
+              </div>
+            </div>
+            <canvas
+              id="teacherBoard"
+              class="whiteboard-canvas"
+            ></canvas>
+            <div class="whiteboard-hint">
+              Draw on the board to share notes with students.
+            </div>
+          </section>
+
+          <section class="code-panel">
+            <div class="whiteboard-header">
+              <div class="whiteboard-title">Student Code</div>
+              <span class="tag">Live submissions</span>
+            </div>
+            <textarea
+              id="teacherCode"
+              class="code-area"
+              readonly
+            ></textarea>
+            <div class="code-toolbar">
+              <span class="code-meta" id="teacherCodeMeta">
+                Waiting for student submission...
+              </span>
+            </div>
+          </section>
+        </div>
+
+        <aside class="control-panel">
+          <h1>Run the session</h1>
+          <p>Start broadcasting and wait for students to join.</p>
+          <button class="btn primary" onclick="startTeacher()">
+            Start teacher
+          </button>
+          <div class="status-list">
+            <div class="status-item">
+              <span class="status-dot"></span>
+              Allow camera and microphone access
+            </div>
+            <div class="status-item">
+              <span class="status-dot"></span>
+              Keep this tab active during the stream
+            </div>
+            <div class="status-item">
+              <span class="status-dot"></span>
+              Share the student link with your class
+            </div>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <script type="module" src="/src/teacher.js"></script>
+  </body>
+</html>
