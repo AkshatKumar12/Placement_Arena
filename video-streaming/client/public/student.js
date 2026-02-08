@@ -1,25 +1,87 @@
 import { socket } from "./socket.js";
 
-
 let pc;
 
 const iceConfig = {
   iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
 };
 
+const drawLine = (ctx, from, to, size, color) => {
+  ctx.strokeStyle = color;
+  ctx.lineWidth = size;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.beginPath();
+  ctx.moveTo(from.x, from.y);
+  ctx.lineTo(to.x, to.y);
+  ctx.stroke();
+};
+
+const setupStudentBoard = () => {
+  const canvas = document.getElementById("studentBoard");
+  if (!canvas) {
+    return;
+  }
+
+  const ctx = canvas.getContext("2d");
+  const resizeCanvas = () => {
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, rect.width, rect.height);
+  };
+
+  resizeCanvas();
+  window.addEventListener("resize", resizeCanvas);
+
+  socket.on("whiteboard-draw", ({ from, to, size, color }) => {
+    const rect = canvas.getBoundingClientRect();
+    drawLine(
+      ctx,
+      { x: from.x * rect.width, y: from.y * rect.height },
+      { x: to.x * rect.width, y: to.y * rect.height },
+      size,
+      color
+    );
+  });
+
+  socket.on("whiteboard-clear", () => {
+    const rect = canvas.getBoundingClientRect();
+    ctx.clearRect(0, 0, rect.width, rect.height);
+  });
+};
+
+const setupStudentCode = () => {
+  const textarea = document.getElementById("studentCode");
+  const submitButton = document.getElementById("submitCode");
+  const status = document.getElementById("codeStatus");
+  if (!textarea || !submitButton || !status) {
+    return;
+  }
+
+  submitButton.addEventListener("click", () => {
+    const code = textarea.value.trimEnd();
+    socket.emit("student-code", { code });
+    const now = new Date();
+    status.textContent = `Submitted at ${now.toLocaleTimeString()}.`;
+  });
+};
+
 window.startStudent = () => {
-  console.log("🎒 Student joined");
+  console.log("ðŸŽ’ Student joined");
   socket.emit("join-as-student");
 
   pc = new RTCPeerConnection(iceConfig);
 
-pc.ontrack = (event) => {
-  const video = document.getElementById("studentVideo");
-  video.srcObject = event.streams[0];
-  video.play().catch(err => {
-    console.log("Autoplay blocked:", err);
-  });
-};
+  pc.ontrack = (event) => {
+    const video = document.getElementById("studentVideo");
+    video.srcObject = event.streams[0];
+    video.play().catch(err => {
+      console.log("Autoplay blocked:", err);
+    });
+  };
 
 
   pc.onicecandidate = (event) => {
@@ -31,6 +93,16 @@ pc.ontrack = (event) => {
     }
   };
 };
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => {
+    setupStudentBoard();
+    setupStudentCode();
+  });
+} else {
+  setupStudentBoard();
+  setupStudentCode();
+}
 
 socket.on("offer", async ({ offer }) => {
   await pc.setRemoteDescription(offer);
