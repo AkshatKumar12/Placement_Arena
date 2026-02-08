@@ -15,6 +15,7 @@ const io = new Server(httpServer, {
 let teacherSocketId = null;
 const studentSocketIds = new Set();
 
+
 io.on("connection", (socket) => {
   console.log("Connected:", socket.id);
 
@@ -71,21 +72,16 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("student-code", ({ code }) => {
-    if (!teacherSocketId) {
-      return;
-    }
-    io.to(teacherSocketId).emit("student-code", {
-      code,
-      studentId: socket.id,
-      submittedAt: Date.now()
-    });
-  });
 
   socket.on("disconnect", () => {
     console.log("Disconnected:", socket.id);
     if (socket.id === teacherSocketId) {
       teacherSocketId = null;
+    }
+    if (studentSocketIds.has(socket.id) && teacherSocketId) {
+      io.to(teacherSocketId).emit("student-left", {
+        studentId: socket.id
+      });
     }
     studentSocketIds.delete(socket.id);
   });

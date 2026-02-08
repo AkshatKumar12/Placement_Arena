@@ -99,45 +99,55 @@ const setupTeacherBoard = () => {
   canvas.addEventListener("pointercancel", stopDrawing);
 };
 
-const setupTeacherCode = () => {
-  const textarea = document.getElementById("teacherCode");
-  const meta = document.getElementById("teacherCodeMeta");
-  if (!textarea || !meta) {
-    return;
-  }
-
-  socket.on("student-code", ({ code, studentId, submittedAt }) => {
-    textarea.value = code ?? "";
-    const time = submittedAt
-      ? new Date(submittedAt).toLocaleTimeString()
-      : "just now";
-    meta.textContent = `Received from ${studentId} at ${time}.`;
-  });
-};
-
 window.startTeacher = async () => {
-  console.log("ðŸŽ“ Teacher started");
+  console.log("Teacher started");
   socket.emit("join-as-teacher");
 
-  localStream = await navigator.mediaDevices.getUserMedia({
-    video: true,
-    audio: true
-  });
+  try {
+    localStream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: true
+    });
+    document.getElementById("teacherVideo").srcObject = localStream;
+    const startBtn = document.getElementById("startTeacherBtn");
+    const leaveBtn = document.getElementById("leaveTeacherBtn");
+    if (startBtn && leaveBtn) {
+      startBtn.hidden = true;
+      leaveBtn.hidden = false;
+    }
+  } catch (error) {
+    console.error("Error accessing media devices:", error);
+    alert("Could not access camera/microphone. Please ensure permissions are granted.");
+  }
+};
 
-  document.getElementById("teacherVideo").srcObject = localStream;
+window.leaveTeacher = () => {
+  Object.values(peerConnections).forEach((pc) => pc.close());
+  if (localStream) {
+    localStream.getTracks().forEach((track) => track.stop());
+  }
+  socket.disconnect();
+  const startBtn = document.getElementById("startTeacherBtn");
+  const leaveBtn = document.getElementById("leaveTeacherBtn");
+  if (startBtn && leaveBtn) {
+    startBtn.hidden = false;
+    leaveBtn.hidden = true;
+  }
 };
 
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => {
     setupTeacherBoard();
-    setupTeacherCode();
   });
 } else {
   setupTeacherBoard();
-  setupTeacherCode();
 }
 
 socket.on("student-joined", async ({ studentId }) => {
+  const notice = document.getElementById("teacherNotice");
+  if (notice) {
+    notice.textContent = `Student joined: ${studentId}`;
+  }
   const pc = new RTCPeerConnection(iceConfig);
   peerConnections[studentId] = pc;
 
@@ -158,6 +168,18 @@ socket.on("student-joined", async ({ studentId }) => {
   await pc.setLocalDescription(offer);
 
   socket.emit("offer", { offer, studentId });
+});
+
+socket.on("student-left", ({ studentId }) => {
+  const notice = document.getElementById("teacherNotice");
+  if (notice) {
+    notice.textContent = `Student left: ${studentId}`;
+  }
+  const pc = peerConnections[studentId];
+  if (pc) {
+    pc.close();
+    delete peerConnections[studentId];
+  }
 });
 
 socket.on("answer", async ({ answer, studentId }) => {

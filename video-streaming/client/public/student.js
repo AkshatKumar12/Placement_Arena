@@ -53,24 +53,8 @@ const setupStudentBoard = () => {
   });
 };
 
-const setupStudentCode = () => {
-  const textarea = document.getElementById("studentCode");
-  const submitButton = document.getElementById("submitCode");
-  const status = document.getElementById("codeStatus");
-  if (!textarea || !submitButton || !status) {
-    return;
-  }
-
-  submitButton.addEventListener("click", () => {
-    const code = textarea.value.trimEnd();
-    socket.emit("student-code", { code });
-    const now = new Date();
-    status.textContent = `Submitted at ${now.toLocaleTimeString()}.`;
-  });
-};
-
 window.startStudent = () => {
-  console.log("ðŸŽ’ Student joined");
+  console.log("Student joined");
   socket.emit("join-as-student");
 
   pc = new RTCPeerConnection(iceConfig);
@@ -83,7 +67,6 @@ window.startStudent = () => {
     });
   };
 
-
   pc.onicecandidate = (event) => {
     if (event.candidate) {
       socket.emit("ice-candidate", {
@@ -92,16 +75,34 @@ window.startStudent = () => {
       });
     }
   };
+
+  const startBtn = document.getElementById("startStudentBtn");
+  const leaveBtn = document.getElementById("leaveStudentBtn");
+  if (startBtn && leaveBtn) {
+    startBtn.hidden = true;
+    leaveBtn.hidden = false;
+  }
+};
+
+window.leaveStudent = () => {
+  if (pc) {
+    pc.close();
+  }
+  socket.disconnect();
+  const startBtn = document.getElementById("startStudentBtn");
+  const leaveBtn = document.getElementById("leaveStudentBtn");
+  if (startBtn && leaveBtn) {
+    startBtn.hidden = false;
+    leaveBtn.hidden = true;
+  }
 };
 
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => {
     setupStudentBoard();
-    setupStudentCode();
   });
 } else {
   setupStudentBoard();
-  setupStudentCode();
 }
 
 socket.on("offer", async ({ offer }) => {
